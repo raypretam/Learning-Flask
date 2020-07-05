@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,session, url_for, redirect
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -26,15 +26,14 @@ def internal_server_error(e):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    name = None
-    age = None
     form = NameForm()
     if form.validate_on_submit():
-        name = form.name.data
-        age = form.age.data
-        form.name.data = ''
-        form.age.data = ''
-    return render_template('index.html',form=form,name=name,age=age)
+        session['name'] = form.name.data
+        session['age'] = form.age.data
+        return redirect(url_for('index'))
+    form.name.data = ''
+    form.age.data = ''
+    return render_template('index.html', form=form, name=session.get('name'), age=session.get('age'))
 
 
 if __name__=='__main__':
